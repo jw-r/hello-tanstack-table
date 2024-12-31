@@ -2,6 +2,7 @@ import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import { defaultData, Project } from "./mocks";
@@ -81,17 +82,32 @@ const columns = [
 ];
 
 function App() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [data, setData] = useState(() => [...defaultData]);
+  const [globalFilter, setGlobalFilter] = useState("");
 
   const table = useReactTable({
     data,
     columns,
+    state: {
+      globalFilter,
+    },
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onGlobalFilterChange: setGlobalFilter,
   });
 
   return (
     <div className="p-4">
       <h1 className="text-xl font-bold mb-4">프로젝트 리스트</h1>
+      <div className="mb-4">
+        <input
+          placeholder="Search..."
+          value={globalFilter ?? ""}
+          onChange={(e) => setGlobalFilter(e.target.value)}
+          className="p-2 border border-gray-300 rounded w-full"
+        />
+      </div>
       <table className="w-full border-gray-200">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
