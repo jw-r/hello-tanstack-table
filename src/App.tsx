@@ -85,28 +85,108 @@ function App() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [data, setData] = useState(() => [...defaultData]);
   const [globalFilter, setGlobalFilter] = useState("");
+  const [columnFilters, setColumnFilters] = useState<
+    { id: string; value: unknown }[]
+  >([]);
 
   const table = useReactTable({
     data,
     columns,
     state: {
       globalFilter,
+      columnFilters,
     },
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onGlobalFilterChange: setGlobalFilter,
+    onColumnFiltersChange: setColumnFilters,
   });
+
+  const handleFilterChange = (id: string, value: string) => {
+    setColumnFilters((prev) => {
+      const existingFilter = prev.find((filter) => filter.id === id);
+      if (existingFilter) {
+        return prev.map((filter) =>
+          filter.id === id ? { ...filter, value } : filter
+        );
+      }
+      return [...prev, { id, value }];
+    });
+  };
 
   return (
     <div className="p-4">
       <h1 className="text-xl font-bold mb-4">프로젝트 리스트</h1>
       <div className="mb-4">
+        <label>Global Search</label>
         <input
           placeholder="Search..."
           value={globalFilter ?? ""}
           onChange={(e) => setGlobalFilter(e.target.value)}
           className="p-2 border border-gray-300 rounded w-full"
         />
+      </div>
+      <div className="grid grid-cols-5 gap-4 mb-4">
+        <div>
+          <label>프로젝트 리스트</label>
+          <input
+            placeholder="Search Title..."
+            value={
+              (columnFilters.find((filter) => filter.id === "title")?.value ||
+                "") as string
+            }
+            onChange={(e) => handleFilterChange("title", e.target.value)}
+            className="p-2 border border-gray-300 rounded w-full"
+          />
+        </div>
+        <div>
+          <label>상태</label>
+          <input
+            placeholder="Search Status..."
+            value={
+              (columnFilters.find((filter) => filter.id === "status")?.value ||
+                "") as string
+            }
+            onChange={(e) => handleFilterChange("status", e.target.value)}
+            className="p-2 border border-gray-300 rounded w-full"
+          />
+        </div>
+        <div>
+          <label>장비명</label>
+          <input
+            placeholder="Search Chamber Name..."
+            value={
+              (columnFilters.find((filter) => filter.id === "chamberName")
+                ?.value || "") as string
+            }
+            onChange={(e) => handleFilterChange("chamberName", e.target.value)}
+            className="p-2 border border-gray-300 rounded w-full"
+          />
+        </div>
+        <div>
+          <label>Lot code</label>
+          <input
+            placeholder="Search Lot Code..."
+            value={
+              (columnFilters.find((filter) => filter.id === "lotCode")?.value ||
+                "") as string
+            }
+            onChange={(e) => handleFilterChange("lotCode", e.target.value)}
+            className="p-2 border border-gray-300 rounded w-full"
+          />
+        </div>
+        <div>
+          <label>알고리즘</label>
+          <input
+            placeholder="Search Algorithm..."
+            value={
+              (columnFilters.find((filter) => filter.id === "algorithm")
+                ?.value || "") as string
+            }
+            onChange={(e) => handleFilterChange("algorithm", e.target.value)}
+            className="p-2 border border-gray-300 rounded w-full"
+          />
+        </div>
       </div>
       <table className="w-full border-gray-200">
         <thead>
